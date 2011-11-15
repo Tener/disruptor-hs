@@ -11,6 +11,7 @@ import Test.Chan
 import Test.Dequeue
 import Test.Queue
 import Test.ManyQueue
+import Test.ManyQueueStrict
 import Test.ManyQueueVector
 
 import Data.List.Split (splitEvery)
@@ -52,4 +53,5 @@ main = do
 --  runTest chanTest
 
   runTest testManyQueue 
+  runTest testManyQueueStrict 
   runTest testManyQueueVector 
