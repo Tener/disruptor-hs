@@ -36,12 +36,13 @@ testManyQueue = do
                   q' <- writeMQueue q x
                   writer q' xs
 
-      reader q !acc 0 = print acc >> putMVar finished ()
-      reader q !acc n = do
+      reader prev q !acc 0 = print acc >> putMVar finished ()
+      reader prev q !acc n = do
                   (q', x) <- readMQueue q
-                  reader q' (acc+x) (n-1)
+                  when (prev > x) (error $ show ("Order violation",prev,x)) -- extra test, to be sure of FIFO
+                  reader x q' (acc+x) (n-1)
   
   forkIO $ writer mq elements
-  forkIO $ reader mq 0 iTERATIONS
+  forkIO $ reader (-1) mq 0 iTERATIONS
 
   takeMVar finished
