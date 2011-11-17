@@ -1,11 +1,10 @@
-{-# LANGUAGE BangPatterns #-}
 
 module Main where
 
-import Data.Time
 
-import Conf
 import Test.BChan
+import Test.BChanFast
+import Test.BChanVFast
 import Test.BTChan
 import Test.Chan
 import Test.Dequeue
@@ -14,33 +13,28 @@ import Test.ManyQueue
 import Test.ManyQueueStrict
 import Test.ManyQueueVector
 
-import Data.List.Split (splitEvery)
-
-timed act = do
-  t0 <- getCurrentTime
-  !v <- act
-  t1 <- getCurrentTime
-  let td = diffUTCTime t1 t0
-  let format v = show v -- (show ((fromIntegral v / (10 ** 12)) :: Double))
-  print ("Action time: " ++ format td)
-  return (v,td)
-  
-
-runTest test = do
-  (_, t) <- timed test
-  print "OpsPerSecond:"
-
-  let format x = unwords . reverse . map reverse . splitEvery 3 . reverse . show $ x
-
-  print $ format (round (fromIntegral iTERATIONS / realToFrac t :: Double) :: Integer)
+import Conf
+import Util
 
 
 main = do
   print iTERATIONS
 
-  timed (print ())
+--  timed (print ())
   
 --  runTest boundedChanTest
+--  runTest boundedChanTestFast
+--  runTest boundedChanTestVFast
+-- 
+  runTest testManyQueue'1P3C 
+  runTest testManyQueue'1P1C 
+-- 
+--  runTest testManyQueueStrict'1P1C 
+--  runTest testManyQueueStrict'1P3C
+-- 
+--  runTest testManyQueueVector'1P1C 
+--  runTest testManyQueueVector'1P3C 
+
 
   -- TOO SLOW:
 
@@ -52,6 +46,7 @@ main = do
 --  runTest testQueue1
 --  runTest chanTest
 
-  runTest testManyQueue 
-  runTest testManyQueueStrict 
-  runTest testManyQueueVector 
+  -- 1P3C
+
+--  runTest testQueue'1P1C
+--  runTest testQueue'1P3C

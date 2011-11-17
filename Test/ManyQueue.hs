@@ -1,13 +1,14 @@
 {-# LANGUAGE BangPatterns #-}
 
-module Test.ManyQueue (testManyQueue) where
+module Test.ManyQueue where 
+-- (testManyQueue'1P1C, testManyQueue'1P3C) where
 
 import Control.Concurrent
 import Control.Monad
 
 import Conf
 
-data MQueue a = MQueue [MVar a]
+newtype MQueue a = MQueue [MVar a]
 
 newMQueue size = do
   lst <- replicateM size newEmptyMVar
@@ -23,26 +24,58 @@ readMQueue (MQueue (x:xs)) = do
   el <- takeMVar x
   return ((MQueue xs), el)
 
-testManyQueue = do
-  print "Test.ManyQueue.testManyQueue"
+testManyQueue'1P1C = do
+  print "Test.ManyQueue.testManyQueue'1P1C"
   finished <- newEmptyMVar
 
   mq <- newMQueue bufferSize
   
-  let elements = [0 .. iTERATIONS]
+  let elements = [0] ++ [1 .. iTERATIONS]
       
-      writer q [] = return ()
-      writer q (x:xs) = do
+      writer _ 0 = putMVar finished ()
+      writer q x = do
                   q' <- writeMQueue q x
-                  writer q' xs
+                  writer q' (x-1)
 
-      reader prev q !acc 0 = print acc >> putMVar finished ()
-      reader prev q !acc n = do
+      writer' _ [] = putMVar finished ()
+      writer' q (x:xs) = do
+                  q' <- writeMQueue q x
+                  writer' q' xs
+
+      reader _ !acc 0 = print acc >> putMVar finished ()
+      reader q !acc n = do
                   (q', x) <- readMQueue q
-                  when (prev > x) (error $ show ("Order violation",prev,x)) -- extra test, to be sure of FIFO
-                  reader x q' (acc+x) (n-1)
+                  reader q' (acc+x) (n-1)
   
-  forkIO $ writer mq elements
-  forkIO $ reader (-1) mq 0 iTERATIONS
+  --forkIO $ writer mq iTERATIONS
+  forkIO $ writer' mq elements
+  forkIO $ reader mq 0 iTERATIONS
 
   takeMVar finished
+  takeMVar finished
+
+testManyQueue'1P3C = do
+  print "Test.ManyQueue.testManyQueue'1P3C"
+  let tCount = 3
+  finished <- newEmptyMVar
+
+  mqs <- replicateM tCount (newMQueue bufferSize)
+  
+  let elements = [0 .. iTERATIONS]
+      
+      writer _ [] = putMVar finished ()
+      writer qs (x:xs) = do
+                  qs' <- mapM (\q -> writeMQueue q x) qs
+                  writer qs' xs
+
+      reader _ !acc 0 = print acc >> putMVar finished ()
+      reader q !acc n = do
+                  (q', x) <- readMQueue q
+                  reader q' (acc+x) (n-1)
+  
+  forkIO $ writer mqs elements
+  mapM_ (\ mq -> forkIO $ reader mq 0 iTERATIONS) mqs
+
+  replicateM (tCount+1) (takeMVar finished)
+
+  return ()
