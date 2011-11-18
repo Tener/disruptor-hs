@@ -12,6 +12,7 @@ import Test.Queue
 import Test.ManyQueue
 import Test.ManyQueueStrict
 import Test.ManyQueueVector
+import Test.IORefQueue
 
 import Conf
 import Util
@@ -26,8 +27,12 @@ main = do
 --  runTest boundedChanTestFast
 --  runTest boundedChanTestVFast
 -- 
-  runTest testManyQueue'1P3C 
-  runTest testManyQueue'1P1C 
+--  runTest testManyQueue'1P3C 
+  runTest testManyQueue'2P2C'singleQueue
+--  runTest testManyQueue'1P1C 
+--  runTest testIORefQueue'1P1C
+--  runTest testIORefQueue'1P1C'Batch
+
 -- 
 --  runTest testManyQueueStrict'1P1C 
 --  runTest testManyQueueStrict'1P3C

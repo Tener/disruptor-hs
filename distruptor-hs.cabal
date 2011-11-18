@@ -5,10 +5,12 @@ License-file:        LICENSE
 Author:              Krzysztof Skrzętnicki
 Category:            Concurrency
 Build-type:          Simple
-Cabal-version:       >=1.2
+Cabal-version:       >=1.10
 
 Executable unicast-test
   Main-is:             unicast-test.hs
   Build-depends:       base, dequeue, queue, BoundedChan, bounded-tchan, vector, strict-concurrency, split, stm, time, deepseq
-  Other-modules:       Conf, Test.BChan, Test.Chan, Test.Dequeue, Test.ManyQueueStrict, Test.ManyQueue, Test.ManyQueueVector, Test.Queue 
+  Other-modules:       Conf, Test.BChan, Test.Chan, Test.Dequeue, Test.ManyQueueStrict, Test.ManyQueue, Test.ManyQueueVector, Test.Queue, Test.IORefQueue
+  Default-Extensions: BangPatterns 
   Ghc-options: -O2 -threaded -rtsopts
+  Default-language:    Haskell2010
