@@ -97,9 +97,8 @@ testManyQueue'2P2C'singleQueue = do
       
       writer arg _ 0 = putMVar finished ()
       writer arg q !x = do
-                  let y = arg * arg
-                  q' <- writeMQueue q y
-                  y `seq` writer arg q' (x-1)
+                  q' <- writeMQueue q x
+                  writer arg q' (x-1)
 
       reader _ !acc 0 = do
         incCounter acc
