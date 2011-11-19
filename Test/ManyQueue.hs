@@ -114,7 +114,7 @@ testManyQueue'2P2C'singleQueue = do
         v' <- takeMVar svar
         putMVar svar (v+v')
 
-      tCount = 4
+      tCount = 2
 
       iTERATIONS' = iTERATIONS `div` tCount
 
