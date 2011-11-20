@@ -14,6 +14,7 @@ import Test.ManyQueueStrict
 import Test.ManyQueueVector
 import Test.IORefQueue
 import Test.MVarBatchQueue
+import Test.ManyQueueStream
 
 import Conf
 import Util
@@ -32,6 +33,7 @@ main = do
 --  runTest testManyQueue'1P3C 
   runTest testManyQueue'2P2C'singleQueue
   runTest testManyQueue'1P1C 
+  runTest testMQueue'1P1C
   runTest testMVarBatchQueue'1P1C
 
 --  runTest testIORefQueue'1P1C
