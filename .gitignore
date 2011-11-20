@@ -1,0 +1,5 @@
+BoundedChan-*/
+dist/
+epoll-*/
+ghc-*/
+thread-ring/
